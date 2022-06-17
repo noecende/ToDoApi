@@ -1,0 +1,50 @@
+version: '3'
+services:
+# The Database
+    database:
+
+        container_name: mysql_database
+
+        image: mysql:8.0
+
+        volumes:
+            - dbdata:/var/lib/mysql
+            - ./docker-compose/dev/mysql:/docker-entrypoint-initdb.d
+
+        environment:
+
+            - “MYSQL_USER=root”
+
+            - “MYSQL_PASSWORD=”
+
+            - "MYSQL_ALLOW_EMPTY_PASSWORD=true"
+
+        ports:
+
+            - 3306:3306
+
+#The Application
+
+    app:
+        image: todo_list
+        container_name: todo_list
+        command: "npm run dev"
+           
+        depends_on:
+            - "database"
+        build:
+
+            context: ./
+
+            dockerfile: docker-compose/dev.dockerfile
+
+        volumes:
+            - ./src:/home/node/app/src
+            - ./logs:/root/.npm/_logs
+
+        ports: 
+            - 4000:4000
+volumes:
+    dbdata:
+
+
