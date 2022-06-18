@@ -7,7 +7,8 @@
     "dev": "nodemon -L --config nodemon.json src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "heroku-postbuild" : "yarn prisma migrate deploy"
   },
   "repository": {
     "type": "git",
