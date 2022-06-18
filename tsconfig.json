@@ -1,4 +1,8 @@
 {
+    "include": [
+        "src/**/*",
+        "prusma/**/*"
+      ],
     "compilerOptions": {
         "module": "commonjs",
         "esModuleInterop": true,

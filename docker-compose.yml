@@ -40,7 +40,7 @@ services:
 
         volumes:
             - ./src:/home/node/app/src
-            - ./logs:/root/.npm/_logs
+            - ./:/home/node/app
 
         ports: 
             - 4000:4000
