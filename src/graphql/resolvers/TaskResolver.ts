@@ -56,6 +56,21 @@ export class TaskResolver {
     }
 
     @Mutation(returns => Task)
+    async deleteTask(
+        @Arg("id", type => ID) id: number,
+        @Ctx() context: any,
+        @PubSub() pubsub: PubSubEngine
+    ) {
+        let task = await context.prisma.task.delete({
+            where: {id: Number(id)}
+        })
+
+        pubsub.publish('TASK_DELETED', task)
+
+        return task
+    }
+
+    @Mutation(returns => Task)
     async updateTask(
         @Arg("id", type => ID) id: number,
         @Arg("title")
