@@ -1,4 +1,6 @@
-import { Arg, Args, ArgsType, Ctx, ID, Mutation, Query, Resolver } from "type-graphql";
+import { subscribe } from "graphql";
+import { PubSubEngine } from "graphql-subscriptions";
+import { Arg, Args, ArgsType, Ctx, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
 import { IDArg } from "../args/IDArg";
 import { Task } from "../types/Task";
 
@@ -22,16 +24,20 @@ export class TaskResolver {
         @Arg("description")
         description: string,
         @Ctx()
-        context: any
+        context: any,
+        @PubSub()
+        pubsub: PubSubEngine
         
     ) {
-        return await context.prisma.task.create({
+        let task = await context.prisma.task.create({
             data: {
                 title,
                 description,
                 isCompleted: false
             }
         })
+        pubsub.publish('TASK_CREATED', task)
+        return task;
     }
 
     @Query(returns => [Task])
@@ -57,31 +63,56 @@ export class TaskResolver {
         @Arg("description", {nullable: true})
         description: string,
         @Ctx()
-        context: any
+        context: any,
+        @PubSub()
+        pubsub: PubSubEngine
     ) {
-        return await context.prisma.task.update({
+        let task = await context.prisma.task.update({
             where: { id: Number(id) },
             data: {
                 title, 
                 description
             }
         })
+        pubsub.publish('TASK_UPDATED', task)
+        return task
     }
 
     @Mutation(returns => Task)
     async toggleTaskStatus(
         @Arg("id", type => ID) id: number,
         @Ctx()
-        context: any
+        context: any,
+        @PubSub()
+        pubsub: PubSubEngine
     ) {
         let task = await context.prisma.task.findUnique({ where: { id: Number(id) } })
 
-        return await context.prisma.task.update({
+        task = await context.prisma.task.update({
             where: { id: Number(id) },
             data: {
                 isCompleted: !task.isCompleted,
                 completedAt: task.isCompleted ? new Date(): null
             }
         })
+
+        pubsub.publish('TASK_UPDATED', task)
+        return task
     }
+
+    @Subscription({topics: "TASK_CREATED"})
+    taskCreated(@Root() task: Task): Task {
+        return task
+    }
+
+    @Subscription({topics: "TASK_UPDATED"})
+    taskUpdated(@Root() task: Task): Task {
+        return task
+    }
+
+    @Subscription({topics: "TASK_DELETED"})
+    taskDeleted(@Root() task: Task): Task {
+        return task
+    }
+ 
 }
