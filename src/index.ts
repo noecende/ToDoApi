@@ -25,6 +25,7 @@ async function bootstrap()
     const apolloServer = new ApolloServer({
         schema: await schema,
         context,
+        cache: "bounded",
         plugins: [
             // Proper shutdown for the HTTP server.
             ApolloServerPluginDrainHttpServer({ httpServer }),
