@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import { ApolloServer } from 'apollo-server-express'
-import {createServer} from 'http'
+import { createServer } from 'http'
+import dotenv from 'dotenv'
 import {WebSocketServer} from 'ws'
 import { schema } from './graphql/schema'
 import express from 'express'
@@ -10,6 +11,7 @@ import { PrismaClient } from '@prisma/client'
 import { PubSub } from 'graphql-subscriptions'
 
 const app = express()
+dotenv.config()
 
 async function bootstrap()
 {
@@ -45,8 +47,7 @@ async function bootstrap()
 
     const wsServer = new WebSocketServer({
       server: httpServer,
-      path: '/graphql',
-        
+      path: '/subscriptions',
     })
 
     const serverCleanup = useServer({
