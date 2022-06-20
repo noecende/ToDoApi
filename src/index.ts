@@ -15,7 +15,7 @@ dotenv.config()
 
 async function bootstrap()
 {
-    const PORT = process.env.port || 4000;
+    const PORT = process.env.PORT || 4000;
     const schemaLoaded = await schema;
     const httpServer = createServer(app)
     const context = {
