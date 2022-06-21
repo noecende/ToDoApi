@@ -9,8 +9,8 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { PubSub } from 'graphql-subscriptions'
 import Container from 'typedi'
-import { PrismaService } from './singletons/PrismaService'
 import { useContainer } from 'class-validator'
+import { PrismaClient } from '@prisma/client'
 
 const app = express()
 dotenv.config()
@@ -20,9 +20,10 @@ async function bootstrap()
     const PORT = process.env.PORT || 4000;
     useContainer(Container, { fallbackOnErrors: true })
     const httpServer = createServer(app)
-    const prismaClient = Container.get(PrismaService).prisma
+    const prismaClient = new PrismaClient()
     const pubSub = new PubSub()
     const schemaLoaded = await schema;
+    Container.set('prisma', prismaClient)
     
     const apolloServer = new ApolloServer({
         schema: await schema,

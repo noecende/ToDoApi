@@ -1,67 +1,52 @@
 import { PubSubEngine } from "graphql-subscriptions";
 import { Arg, Args, Ctx, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
+import { Inject, Service } from "typedi";
+import { TaskService } from "../../Services/TaskService";
 import { CreateTaskArgs } from "../args/CreateTaskArgs";
+import { PaginationArgs } from "../args/PaginationArgs";
+import { TaskArgs } from "../args/TaskArgs";
 import { UpdateTaskArgs } from "../args/UpdateTaskArgs";
 import { Task } from "../types/Task";
 
+@Service()
 @Resolver(Task)
 export class TaskResolver {
 
+    constructor(@Inject() private taskService: TaskService) {}
+
     @Query(returns => Task)
     async task(
-        @Arg("id", type => ID)
-        id: number,
-        @Ctx() context: any
+        @Args() {id}: TaskArgs
     ) {
-        return await context.prisma.task.findUnique({
-            where: { id: Number(id) },
-        })
+        return await this.taskService.findById(id)
     }
 
     @Mutation(returns => Task)
     async createTask(
         @Args() {title, description}: CreateTaskArgs,
-        @Ctx()
-        context: any,
         @PubSub()
         pubsub: PubSubEngine
         
     ) {
-        let task = await context.prisma.task.create({
-            data: {
-                title,
-                description,
-                isCompleted: false
-            }
+        let task = await this.taskService.create({
+            title: title,
+            description: description
         })
         pubsub.publish('TASK_CREATED', task)
         return task;
     }
 
     @Query(returns => [Task])
-    async tasks(
-        @Arg("offset")
-        offset: number, 
-        @Arg("limit")
-        limit: number,
-        @Ctx()
-        context: any
-        ) {
-            return await context.prisma.task.findMany({
-                skip: offset,
-                take: limit
-            })
+    async tasks(@Args() {offset, limit}: PaginationArgs) {
+            return await this.taskService.paginate(offset, limit)
     }
 
     @Mutation(returns => Task)
     async deleteTask(
-        @Arg("id", type => ID) id: number,
-        @Ctx() context: any,
+        @Args() {id}: TaskArgs,
         @PubSub() pubsub: PubSubEngine
     ) {
-        let task = await context.prisma.task.delete({
-            where: {id: Number(id)}
-        })
+        let task = await this.taskService.delete(id)
 
         pubsub.publish('TASK_DELETED', task)
 
@@ -71,15 +56,11 @@ export class TaskResolver {
     @Mutation(returns => Task)
     async updateTask(
         @Args() {id, title, description}: UpdateTaskArgs,
-        @Ctx() context: any,
         @PubSub() pubsub: PubSubEngine
     ) {
-        let task = await context.prisma.task.update({
-            where: { id: Number(id) },
-            data: {
+        let task = await this.taskService.update(id, {
                 title, 
                 description
-            }
         })
         pubsub.publish('TASK_UPDATED', task)
         return task
@@ -88,19 +69,14 @@ export class TaskResolver {
     @Mutation(returns => Task)
     async toggleTaskStatus(
         @Arg("id", type => ID) id: number,
-        @Ctx()
-        context: any,
         @PubSub()
         pubsub: PubSubEngine
     ) {
-        let task = await context.prisma.task.findUnique({ where: { id: Number(id) } })
+        let task = await this.taskService.findById(id)
 
-        task = await context.prisma.task.update({
-            where: { id: Number(id) },
-            data: {
-                isCompleted: !task.isCompleted,
-                completedAt: task.isCompleted ? new Date(): null
-            }
+        task = await this.taskService.update(id, {
+            isCompleted: !task.isCompleted,
+            completedAt: task.isCompleted ? new Date(): null
         })
 
         pubsub.publish('TASK_UPDATED', task)
