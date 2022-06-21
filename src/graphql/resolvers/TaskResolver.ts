@@ -1,7 +1,7 @@
-import { subscribe } from "graphql";
 import { PubSubEngine } from "graphql-subscriptions";
-import { Arg, Args, ArgsType, Ctx, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
-import { IDArg } from "../args/IDArg";
+import { Arg, Args, Ctx, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
+import { CreateTaskArgs } from "../args/CreateTaskArgs";
+import { UpdateTaskArgs } from "../args/UpdateTaskArgs";
 import { Task } from "../types/Task";
 
 @Resolver(Task)
@@ -9,7 +9,8 @@ export class TaskResolver {
 
     @Query(returns => Task)
     async task(
-        @Arg("id", type => ID) id: number,
+        @Arg("id", type => ID)
+        id: number,
         @Ctx() context: any
     ) {
         return await context.prisma.task.findUnique({
@@ -19,10 +20,7 @@ export class TaskResolver {
 
     @Mutation(returns => Task)
     async createTask(
-        @Arg("title")
-        title: string,
-        @Arg("description")
-        description: string,
+        @Args() {title, description}: CreateTaskArgs,
         @Ctx()
         context: any,
         @PubSub()
@@ -72,15 +70,9 @@ export class TaskResolver {
 
     @Mutation(returns => Task)
     async updateTask(
-        @Arg("id", type => ID) id: number,
-        @Arg("title")
-        title: string,
-        @Arg("description", {nullable: true})
-        description: string,
-        @Ctx()
-        context: any,
-        @PubSub()
-        pubsub: PubSubEngine
+        @Args() {id, title, description}: UpdateTaskArgs,
+        @Ctx() context: any,
+        @PubSub() pubsub: PubSubEngine
     ) {
         let task = await context.prisma.task.update({
             where: { id: Number(id) },
