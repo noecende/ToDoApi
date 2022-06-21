@@ -36,6 +36,7 @@
     "graphql-ws": "^5.9.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
+    "typedi": "^0.10.0",
     "ws": "^8.8.0"
   }
 }
