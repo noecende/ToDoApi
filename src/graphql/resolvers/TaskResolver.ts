@@ -1,5 +1,5 @@
 import { PubSubEngine } from "graphql-subscriptions";
-import { Arg, Args, Ctx, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
+import { Arg, Args, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
 import { Inject, Service } from "typedi";
 import { TaskService } from "../../services/TaskService";
 import { CreateTaskArgs } from "../args/CreateTaskArgs";
