@@ -1,4 +1,4 @@
-import { PrismaClient, task } from "@prisma/client";
+import { PrismaClient, Task as task} from "@prisma/client";
 import { Inject, Service } from "typedi";
 import { Task } from "../graphql/types/Task";
 

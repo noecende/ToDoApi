@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model task {
+model Task {
   
     id Int @id @default(autoincrement())
 
@@ -25,4 +25,21 @@ model task {
     date DateTime @default(now()) @map("createdAt")
     
     updatedAt DateTime @updatedAt
+}
+
+model User {
+    id Int @id @default(autoincrement())
+
+    name String
+
+    lastname String
+
+    email String @unique
+
+    password String
+
+    createdAt DateTime @default(now())
+
+    updatedAt DateTime @updatedAt
+
 }
