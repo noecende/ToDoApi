@@ -40,7 +40,8 @@ services:
 
         volumes:
             - ./src:/home/node/app/src
-            - ./:/home/node/app
+            - ./prisma:/home/node/app/prisma
+            - ./docker-compose:/home/node/app/docker-composee
 
         ports: 
             - 4000:4000
