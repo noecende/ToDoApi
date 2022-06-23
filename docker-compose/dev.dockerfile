@@ -13,5 +13,3 @@ COPY nodemon.json ./
 COPY tsconfig.json ./
 
 RUN npm install
-
-COPY . ./

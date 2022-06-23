@@ -41,7 +41,9 @@ services:
         volumes:
             - ./src:/home/node/app/src
             - ./prisma:/home/node/app/prisma
-            - ./docker-compose:/home/node/app/docker-composee
+            - ./docker-compose:/home/node/app/docker-compose
+            - ./package-lock.json:/home/node/app/package-lock.json
+            - ./package.json:/home/node/app/package.json
 
         ports: 
             - 4000:4000
