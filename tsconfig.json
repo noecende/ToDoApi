@@ -1,8 +1,7 @@
 {
     "include": [
-        "src/**/*",
-        "src/*/*",
-        "prisma/**/*"
+        "src",
+        "prisma"
       ],
     "compilerOptions": {
         "module": "commonjs",
