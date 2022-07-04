@@ -1,6 +1,7 @@
 import { PubSubEngine } from "graphql-subscriptions";
-import { Arg, Args, ID, Mutation, PubSub, Query, Resolver, Root, Subscription } from "type-graphql";
+import { Arg, Args, ID, Mutation, PubSub, Query, Resolver, Root, Subscription, UseMiddleware } from "type-graphql";
 import { Inject, Service } from "typedi";
+import { apiAuth } from "../../middleware/Auth";
 import { TaskService } from "../../services/TaskService";
 import { CreateTaskArgs } from "../args/CreateTaskArgs";
 import { PaginationArgs } from "../args/PaginationArgs";
@@ -22,6 +23,7 @@ export class TaskResolver {
     }
 
     @Mutation(returns => Task)
+    @UseMiddleware(apiAuth)
     async createTask(
         @Args() {title, description}: CreateTaskArgs,
         @PubSub()
@@ -37,11 +39,13 @@ export class TaskResolver {
     }
 
     @Query(returns => [Task])
+    @UseMiddleware(apiAuth)
     async tasks(@Args() {offset, limit}: PaginationArgs) {
             return await this.taskService.paginate(offset, limit)
     }
 
     @Mutation(returns => Task)
+    @UseMiddleware(apiAuth)
     async deleteTask(
         @Args() {id}: TaskArgs,
         @PubSub() pubsub: PubSubEngine
@@ -54,6 +58,7 @@ export class TaskResolver {
     }
 
     @Mutation(returns => Task)
+    @UseMiddleware(apiAuth)
     async updateTask(
         @Args() {id, title, description}: UpdateTaskArgs,
         @PubSub() pubsub: PubSubEngine
@@ -67,6 +72,7 @@ export class TaskResolver {
     }
 
     @Mutation(returns => Task)
+    @UseMiddleware(apiAuth)
     async toggleTaskStatus(
         @Arg("id", type => ID) id: number,
         @PubSub()

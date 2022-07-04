@@ -2,7 +2,8 @@ import bcrypt from 'bcrypt';
 import { PrismaClient, User } from "@prisma/client";
 import { Inject, Service } from "typedi";
 import { GraphQLError } from 'graphql';
-import {sign} from 'jsonwebtoken';
+import {sign, verify} from 'jsonwebtoken';
+import { UserService } from './UserService';
 
 interface credentials {
     email: string,
@@ -13,6 +14,7 @@ interface credentials {
 export class AuthService {
 
     @Inject("prisma") private prisma: PrismaClient
+    @Inject() private userService: UserService
 
     async login(credentials: credentials) {
         let user: User = await this.prisma.user.findUnique({
@@ -35,6 +37,12 @@ export class AuthService {
         }
 
         throw new GraphQLError('Credenciales inválidas')
+    }
+
+    async getAuthUser(token: string) {
+        let tokenData : any = verify(token, process.env.JWT_SECRET)
+        let user = await this.userService.findById(tokenData.id);
+        return user
     }
 
 }

@@ -10,7 +10,8 @@ import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { PubSub } from 'graphql-subscriptions'
 import Container from 'typedi'
 import { useContainer } from 'class-validator'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, User } from '@prisma/client'
+import { AuthService } from './services/AuthService'
 
 const app = express()
 dotenv.config()
@@ -27,8 +28,14 @@ async function bootstrap()
     
     const apolloServer = new ApolloServer({
         schema: await schema,
-        context: () => {
+        context: async ({req}) => {
+          let token = req.headers.authorization?.split('Bearer ')[1]
+          let user: User
+          if(token) {
+            user = await Container.get(AuthService).getAuthUser(token)
+          }
           return {
+            user,
             prisma: prismaClient,
             pubsub: pubSub
           }
