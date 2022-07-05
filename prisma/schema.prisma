@@ -25,6 +25,10 @@ model Task {
     date DateTime @default(now()) @map("createdAt")
     
     updatedAt DateTime @updatedAt
+
+    workspace Workspace? @relation(fields: [workspaceId], references: [id])
+
+    workspaceId Int?
 }
 
 model User {
@@ -42,4 +46,30 @@ model User {
 
     updatedAt DateTime @updatedAt
 
+    workspaces UserOnWorkspace[]
+
 }
+
+model Workspace {
+    id Int @id @default(autoincrement())
+
+    name String
+
+    participants UserOnWorkspace[]
+
+    tasks Task[]
+}
+
+model UserOnWorkspace {
+    user User @relation(fields: [userId], references: [id])
+
+    userId Int
+
+    workspace Workspace @relation(fields: [workspaceId], references: [id])
+  
+    workspaceId Int
+
+    role String
+
+    @@id([userId, workspaceId])
+} 
