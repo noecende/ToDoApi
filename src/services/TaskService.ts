@@ -9,7 +9,7 @@ export class TaskService {
 
     public async findById(id: number): Promise<task> {
         return await this.prisma.task.findUnique({
-            where: { id: Number(id) }
+            where: { id: Number(id) },
         })
     }
 
@@ -18,14 +18,15 @@ export class TaskService {
      * @param task - <Tarea> parcial
      * @returns La tarea que se creó.
      */
-    public async create(task: Partial<Task>): Promise<task> {
+    public async create(task: Partial<task>): Promise<task> {
         return await this.prisma.task.create({
             data: {
                 title: task.title,
                 description: task.description,
                 isCompleted: false,
                 ...task
-            }
+            }, 
+            include: {workspace:true}
         })
     }
 
@@ -54,7 +55,7 @@ export class TaskService {
     public async paginate(offset: number, limit: number): Promise<task[]> {
         return await this.prisma.task.findMany({
             skip: offset,
-            take: limit
+            take: limit,
         })
     }
 }

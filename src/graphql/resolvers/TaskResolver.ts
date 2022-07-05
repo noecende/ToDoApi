@@ -25,14 +25,15 @@ export class TaskResolver {
     @Mutation(returns => Task)
     @UseMiddleware(apiAuth)
     async createTask(
-        @Args() {title, description}: CreateTaskArgs,
+        @Args() {title, description, workspaceId}: CreateTaskArgs,
         @PubSub()
         pubsub: PubSubEngine
         
     ) {
         let task = await this.taskService.create({
             title: title,
-            description: description
+            description: description,
+            workspaceId: workspaceId
         })
         pubsub.publish('TASK_CREATED', task)
         return task;
