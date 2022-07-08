@@ -11,6 +11,9 @@ export class Workspace {
     @Field()
     name: String
 
+    @Field()
+    owner: User
+
     @Field(type => [User])
     participants: User[]
 

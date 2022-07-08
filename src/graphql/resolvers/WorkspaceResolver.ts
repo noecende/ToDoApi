@@ -1,4 +1,4 @@
-import { Arg, Args, Ctx, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Args, Ctx, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { Inject, Service } from "typedi";
 import { apiAuth } from "../../middleware/Auth";
 import { TaskService } from "../../services/TaskService";
@@ -39,6 +39,11 @@ export class WorkspaceResolver {
     @FieldResolver(returns => [User])
     async participants(@Root() root: Workspace) {
         return this.workspaceService.getParticipants(root.id)
+    }
+
+    @FieldResolver(returns => User)
+    async owner(@Root() root: Workspace) {
+        return this.workspaceService.getOwner(root.id)
     }
 
 }
