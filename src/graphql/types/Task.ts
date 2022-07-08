@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from "type-graphql";
+import { Workspace } from "./Workspace";
 
 @ObjectType()
 export class Task {
@@ -20,5 +21,8 @@ export class Task {
 
     @Field({nullable: true})
     completedAt?: Date
+
+    @Field({nullable: true})
+    workspace?: Workspace
 
 }

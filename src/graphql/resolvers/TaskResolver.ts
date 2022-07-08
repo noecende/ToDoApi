@@ -1,5 +1,5 @@
 import { PubSubEngine } from "graphql-subscriptions";
-import { Arg, Args, ID, Mutation, PubSub, Query, Resolver, Root, Subscription, UseMiddleware } from "type-graphql";
+import { Arg, Args, FieldResolver, ID, Mutation, PubSub, Query, Resolver, Root, Subscription, UseMiddleware } from "type-graphql";
 import { Inject, Service } from "typedi";
 import { apiAuth } from "../../middleware/Auth";
 import { TaskService } from "../../services/TaskService";
@@ -8,12 +8,24 @@ import { PaginationArgs } from "../args/PaginationArgs";
 import { TaskArgs } from "../args/TaskArgs";
 import { UpdateTaskArgs } from "../args/UpdateTaskArgs";
 import { Task } from "../types/Task";
+import { Task as TaskModel } from "@prisma/client";
+import { WorkspaceService } from "../../services/WorkspaceService";
+import { Workspace } from "../types/Workspace";
 
 @Service()
 @Resolver(Task)
 export class TaskResolver {
 
-    constructor(@Inject() private taskService: TaskService) {}
+    constructor(
+        @Inject() private taskService: TaskService,
+        @Inject() private workspaceService: WorkspaceService
+    
+    ) {}
+
+    @FieldResolver(returns => Workspace)
+    async workspace(@Root() task: TaskModel) {
+        return this.workspaceService.findByTask(task.id)
+    }
 
     @Query(returns => Task)
     async task(

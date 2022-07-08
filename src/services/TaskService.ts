@@ -1,6 +1,5 @@
 import { PrismaClient, Task as task} from "@prisma/client";
 import { Inject, Service } from "typedi";
-import { Task } from "../graphql/types/Task";
 
 @Service()
 export class TaskService {
@@ -11,6 +10,10 @@ export class TaskService {
         return await this.prisma.task.findUnique({
             where: { id: Number(id) },
         })
+    }
+
+    public async findByWorkspace(workspaceId: number) {
+        return this.prisma.workspace.findUnique({where: {id: workspaceId}}).tasks()
     }
 
     /**
@@ -25,8 +28,7 @@ export class TaskService {
                 description: task.description,
                 isCompleted: false,
                 ...task
-            }, 
-            include: {workspace:true}
+            },
         })
     }
 
@@ -39,7 +41,7 @@ export class TaskService {
      * @param task - Omitir<Parcial<Tarea>, 'id'>
      * @returns La tarea actualizada
      */
-    public async update(id: number, task: Omit<Partial<Task>, 'id'>): Promise<task> {
+    public async update(id: number, task: Omit<Partial<task>, 'id'>): Promise<task> {
         return await this.prisma.task.update({
             data: task,
             where: {
