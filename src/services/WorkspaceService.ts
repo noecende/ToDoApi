@@ -49,4 +49,9 @@ export class WorkspaceService {
             }
         }})
     }
+
+    public async updateWorkspace(id: number, name?: string) {
+        return this.prisma.workspace.update({where: {id}, data: {name}})
+    }
+
 }

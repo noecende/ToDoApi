@@ -12,8 +12,8 @@ export class TaskService {
         })
     }
 
-    public async findByWorkspace(workspaceId: number) {
-        return this.prisma.workspace.findUnique({where: {id: workspaceId}}).tasks()
+    public async findByWorkspace(workspaceId: number, offset: number, limit: number) {
+        return this.prisma.workspace.findUnique({where: {id: workspaceId}}).tasks({skip: offset, take:limit})
     }
 
     /**

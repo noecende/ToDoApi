@@ -8,6 +8,8 @@ import { WorkspaceArgs } from "../args/workspace/WorkspaceArgs";
 import { Task } from "../types/Task";
 import { Workspace } from "../types/Workspace";
 import { User } from "../types/User";
+import { PaginationArgs } from "../args/PaginationArgs";
+import { UpdateWorkspaceArgs } from "../args/workspace/UpdateWorkspaceArgs";
 
 @Service()
 @Resolver(Workspace)
@@ -31,9 +33,23 @@ export class WorkspaceResolver {
         return this.workspaceService.createWorkspace(name, ctx.user.id)
     }
 
+    @Mutation(returns => Workspace)
+    @UseMiddleware(apiAuth)
+    async updateWorkspace(@Args() {id, name}: UpdateWorkspaceArgs) {
+        if(name) {
+            return this.workspaceService.updateWorkspace(id, name)
+        }
+
+        return this.workspaceService.findById(id)
+    }
+
+    async deleteWorkspace(@Args() {id}: WorkspaceArgs) {
+        
+    }
+
     @FieldResolver(returns => [Task])
-    async tasks(@Root() root: Workspace) {
-       return this.taskService.findByWorkspace(root.id)
+    async tasks(@Root() root: Workspace, @Args() {offset, limit}: PaginationArgs) {
+       return this.taskService.findByWorkspace(root.id, offset, limit)
     }
 
     @FieldResolver(returns => [User])
