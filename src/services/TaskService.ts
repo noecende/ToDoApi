@@ -27,7 +27,7 @@ export class TaskService {
                 title: task.title,
                 description: task.description,
                 isCompleted: false,
-                ...task
+                workspaceId: Number(task.workspaceId)
             },
         })
     }
