@@ -26,7 +26,7 @@ model Task {
     
     updatedAt DateTime @updatedAt
 
-    workspace Workspace? @relation(fields: [workspaceId], references: [id])
+    workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
     workspaceId Int?
 }
@@ -61,11 +61,11 @@ model Workspace {
 }
 
 model UsersOnWorkspaces {
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     userId Int
 
-    workspace Workspace @relation(fields: [workspaceId], references: [id])
+    workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   
     workspaceId Int
 
