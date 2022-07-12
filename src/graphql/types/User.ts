@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from "type-graphql"
+import { Workspace } from "./Workspace"
 
 @ObjectType()
 export class User {
@@ -17,4 +18,7 @@ export class User {
 
     @Field()
     createdAt: Date
+
+    @Field(type => [Workspace])
+    workspaces: Workspace[]
 }

@@ -11,7 +11,7 @@ export class Workspace {
     @Field()
     name: String
 
-    @Field()
+    @Field(type => User)
     owner: User
 
     @Field(type => [User])

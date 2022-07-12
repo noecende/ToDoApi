@@ -1,9 +1,12 @@
 import { PrismaClient, User, UsersOnWorkspaces, Workspace } from "@prisma/client";
+import { PubSub } from "graphql-subscriptions";
 import { Inject, Service } from "typedi";
 
 @Service()
 export class WorkspaceService {
-    constructor(@Inject("prisma") private prisma: PrismaClient) {}
+    constructor(
+        @Inject("prisma") private prisma: PrismaClient,
+        @Inject('pubSub') private pubsub: PubSub) {}
 
     public async findById(id: number): Promise<Workspace> {
         return await this.prisma.workspace.findUnique({where: {id: Number(id)}})
@@ -11,6 +14,20 @@ export class WorkspaceService {
 
     public async findByTask(taskId: number): Promise<Workspace> {
         return await this.prisma.task.findUnique({where: {id: taskId}}).workspace();
+    }
+
+    public async findByUser(userId: number): Promise<Workspace[]>{
+        return (await this.prisma
+                    .user
+                    .findUnique({
+                        where: {
+                            id: Number(userId)
+                        }
+                    })
+                    .workspaces({where: {role: 'owner'}, include: { workspace: true }}))
+                    .map((workspace: UsersOnWorkspaces & {workspace: Workspace}) => {
+                        return workspace.workspace
+                    })
     }
 
     /**
@@ -37,7 +54,7 @@ export class WorkspaceService {
     }
 
     public async createWorkspace(name: string, userId: number) {
-        return await this.prisma.workspace.create({data: {
+        let workspace: Workspace = await this.prisma.workspace.create({data: {
             name,
             participants : {
                 create: [{
@@ -48,6 +65,9 @@ export class WorkspaceService {
                 }]
             }
         }})
+
+        this.pubsub.publish('WORKSPACE_CREATED', workspace)
+        return workspace
     }
 
     public async updateWorkspace(id: number, name?: string) {

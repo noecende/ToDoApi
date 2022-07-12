@@ -22,7 +22,7 @@ export class Task {
     @Field({nullable: true})
     completedAt?: Date
 
-    @Field({nullable: true})
+    @Field(type => Workspace, {nullable: true})
     workspace?: Workspace
 
 }
