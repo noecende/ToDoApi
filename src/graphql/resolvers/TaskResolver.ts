@@ -11,6 +11,7 @@ import { Task } from "../types/Task";
 import { Task as TaskModel } from "@prisma/client";
 import { WorkspaceService } from "../../services/WorkspaceService";
 import { Workspace } from "../types/Workspace";
+import { TaskSubscriptionsArgs } from "../args/TaskSubscriptionsArgs";
 
 @Service()
 @Resolver(Task)
@@ -102,18 +103,35 @@ export class TaskResolver {
         return task
     }
 
-    @Subscription({topics: "TASK_CREATED"})
-    taskCreated(@Root() task: Task): Task {
+    @Subscription({
+        topics: "TASK_CREATED",
+        filter: ({payload, args}) => args.workspaceId == payload.workspaceId
+    })
+    taskCreated(
+        @Root() task: Task,
+        @Args() {workspaceId}: TaskSubscriptionsArgs
+    ): Task {
         return task
     }
 
-    @Subscription({topics: "TASK_UPDATED"})
-    taskUpdated(@Root() task: Task): Task {
+    @Subscription({
+        topics: "TASK_UPDATED",
+        filter: ({payload, args}) => args.workspaceId == payload.workspaceId
+    })
+    taskUpdated(
+        @Root() task: Task,
+        @Args() {workspaceId}: TaskSubscriptionsArgs
+    ): Task {
         return task
     }
 
-    @Subscription({topics: "TASK_DELETED"})
-    taskDeleted(@Root() task: Task): Task {
+    @Subscription({
+        topics: "TASK_DELETED",
+        filter: ({payload, args}) => args.workspaceId == payload.workspaceId
+    })
+    taskDeleted(
+        @Root() task: Task,
+        @Args() {workspaceId}: TaskSubscriptionsArgs): Task {
         return task
     }
  

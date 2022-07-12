@@ -1,4 +1,4 @@
-import { Args, Ctx, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Args, Ctx, FieldResolver, Mutation, Query, Resolver, Root, Subscription, UseMiddleware } from "type-graphql";
 import { Inject, Service } from "typedi";
 import { apiAuth } from "../../middleware/Auth";
 import { TaskService } from "../../services/TaskService";
@@ -43,6 +43,9 @@ export class WorkspaceResolver {
         return this.workspaceService.findById(id)
     }
 
+    /**
+     * @todo Implementar el resolver para eliminar workspace.
+     */
     async deleteWorkspace(@Args() {id}: WorkspaceArgs) {
         
     }
@@ -60,6 +63,16 @@ export class WorkspaceResolver {
     @FieldResolver(returns => User)
     async owner(@Root() root: Workspace) {
         return this.workspaceService.getOwner(root.id)
+    }
+
+    @Subscription({topics: "WORKSPACE_CREATED"})
+    workspaceCreated(@Root() workspace: Workspace): Workspace {
+        return workspace
+    }
+
+    @Subscription({topics: "WORKSPACE_UPDATED"})
+    workspaceUpdated(@Root() workspace: Workspace): Workspace {
+        return workspace
     }
 
 }
