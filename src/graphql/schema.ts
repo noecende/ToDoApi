@@ -6,9 +6,11 @@ import { TaskResolver } from "./resolvers/TaskResolver"
 import { UserResolver } from "./resolvers/UserResolver"
 import { WorkspaceResolver } from "./resolvers/WorkspaceResolver"
 
-export const schema = buildSchema({
-    resolvers: [TaskResolver, UserResolver, AuthResolver, WorkspaceResolver],
-    pubSub: new PubSub(),
-    dateScalarMode: "isoDate",
-    container: Container
-})
+export const schema = (pubSub: PubSub) => {
+    return buildSchema({
+        resolvers: [TaskResolver, UserResolver, AuthResolver, WorkspaceResolver],
+        pubSub: pubSub,
+        dateScalarMode: "isoDate",
+        container: Container
+    })
+}

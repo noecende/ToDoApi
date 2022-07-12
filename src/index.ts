@@ -23,11 +23,12 @@ async function bootstrap()
     const httpServer = createServer(app)
     const prismaClient = new PrismaClient()
     const pubSub = new PubSub()
-    const schemaLoaded = await schema;
+    const schemaLoaded = await schema(pubSub);
     Container.set('prisma', prismaClient)
+    Container.set('pubSub', pubSub)
     
     const apolloServer = new ApolloServer({
-        schema: await schema,
+        schema: schemaLoaded,
         context: async ({req}) => {
           let token = req.headers.authorization?.split('Bearer ')[1]
           let user: User
