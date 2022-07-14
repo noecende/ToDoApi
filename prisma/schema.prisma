@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -48,6 +49,9 @@ model User {
 
     workspaces UsersOnWorkspaces[]
 
+    @@fulltext([name])
+    @@fulltext([name, lastname])
+    
 }
 
 model Workspace {
