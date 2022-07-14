@@ -45,6 +45,45 @@ export class WorkspaceService {
         return usersOnWorskpaces[0].user 
     }
 
+    public async addParticipant(userId: number, workspaceId: number): Promise<Workspace> {
+        
+        let usersOnWorskpaces = await this.prisma.usersOnWorkspaces.findUnique({
+            where: {
+                userId_workspaceId: {
+                    userId: Number(userId),
+                    workspaceId: Number(workspaceId)
+                }
+            },
+            include: {
+                workspace: true
+            }
+        })
+
+        if(usersOnWorskpaces) {
+            return usersOnWorskpaces.workspace
+        }
+
+        let workspace: Workspace = (
+            await this.prisma
+                        .usersOnWorkspaces
+                        .create({
+                            data: {
+                                role: 'guest',
+                                user: {
+                                    connect: {id: Number(userId)}
+                                },
+                                workspace: {
+                                    connect: {id: Number(workspaceId)}
+                                }
+                            },
+                            include: {workspace: true}
+                        })
+            ).workspace
+
+        this.pubsub.publish('WORKSPACE_UPDATED', workspace)
+        return workspace
+    }
+
     public async getParticipants(workspaceId: number) {
         return (await (this.prisma.workspace.findUnique({where: {id: workspaceId}}).participants({include: {user: true}}))).map(
             (relation: UsersOnWorkspaces & {user: User}) => {

@@ -10,6 +10,7 @@ import { Workspace } from "../types/Workspace";
 import { User } from "../types/User";
 import { PaginationArgs } from "../args/PaginationArgs";
 import { UpdateWorkspaceArgs } from "../args/workspace/UpdateWorkspaceArgs";
+import { AddParticipantArgs } from "../args/workspace/AddParticipantArgs";
 
 @Service()
 @Resolver(Workspace)
@@ -41,6 +42,12 @@ export class WorkspaceResolver {
         }
 
         return this.workspaceService.findById(id)
+    }
+
+    @Mutation(returns => Workspace)
+    @UseMiddleware(apiAuth)
+    async addParticipant(@Args() {userId, workspaceId}: AddParticipantArgs) {
+        return this.workspaceService.addParticipant(userId, workspaceId)
     }
 
     /**
