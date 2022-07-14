@@ -30,7 +30,8 @@ export class UserService {
      * @param {string} search 
      * @returns Usuarios que coincidan con la búsqueda.
      */
-    public async searchUsers(search: string): Promise<User[]> {
+    public async searchUsers(search?: string): Promise<User[]> {
+        search = (search == null) ? undefined: search
         return this.prisma.user.findMany({
             where: {
                 name: { search: search },
