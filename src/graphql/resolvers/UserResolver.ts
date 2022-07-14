@@ -1,6 +1,7 @@
 import { UsersOnWorkspaces, Workspace as prismaWorkspace } from "@prisma/client";
-import { Args, FieldResolver, Mutation, Resolver, Root } from "type-graphql";
+import { Arg, Args, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { Inject, Service } from "typedi";
+import { apiAuth } from "../../middleware/Auth";
 import { UserService } from "../../services/UserService";
 import { WorkspaceService } from "../../services/WorkspaceService";
 import { CreateUserArgs } from "../args/user/CreateUserArgs";
@@ -13,6 +14,12 @@ export class UserResolver {
 
     @Inject() userService: UserService
     @Inject() workspaceService: WorkspaceService
+
+    @Query(returns => [User])
+    @UseMiddleware(apiAuth)
+    async searchUsers(@Arg('search', {nullable: true}) search: string) {
+        return this.userService.searchUsers(search)
+    }
 
     @Mutation(returns => User)
     async register(

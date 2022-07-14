@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { Inject, Service } from "typedi";
-import { User } from "../graphql/types/User";
+
 import { hashPassword } from "../utils/PasswordHash";
 
 @Service()
@@ -23,6 +23,20 @@ export class UserService {
         return await this.prisma.user.findUnique({where: {
             id: Number(id)
         }})
+    }
+
+    /**
+     * Buscar usuarios por nombre o apellido
+     * @param {string} search 
+     * @returns Usuarios que coincidan con la búsqueda.
+     */
+    public async searchUsers(search: string): Promise<User[]> {
+        return this.prisma.user.findMany({
+            where: {
+                name: { search: search },
+                lastname: {search: search}
+            }
+        })
     }
 
 }
