@@ -84,8 +84,14 @@ export class WorkspaceService {
         return workspace
     }
 
-    public async getParticipants(workspaceId: number) {
-        return (await (this.prisma.workspace.findUnique({where: {id: workspaceId}}).participants({include: {user: true}}))).map(
+    public async getParticipants(workspaceId: number): Promise<User[]> {
+        let participants = await this.prisma.workspace.findUnique({where: {id: workspaceId}}).participants({include: {user: true}})
+        
+        if(participants == null) {
+            return [];
+        }
+        
+        return participants.map(
             (relation: UsersOnWorkspaces & {user: User}) => {
                 return relation.user
             }
