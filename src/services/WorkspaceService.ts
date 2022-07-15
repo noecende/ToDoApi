@@ -1,4 +1,4 @@
-import { PrismaClient, User, UsersOnWorkspaces, Workspace } from "@prisma/client";
+import { PrismaClient, Task, User, UsersOnWorkspaces, Workspace } from "@prisma/client";
 import { PubSub } from "graphql-subscriptions";
 import { Inject, Service } from "typedi";
 
@@ -111,6 +111,18 @@ export class WorkspaceService {
 
     public async updateWorkspace(id: number, name?: string) {
         return this.prisma.workspace.update({where: {id}, data: {name}})
+    }
+
+    public async deleteWorkspace(id: number): Promise<Workspace & {tasks: Task[], participants: UsersOnWorkspaces[]}> {
+        return this.prisma.workspace.delete({
+            where: {
+                id: Number(id)
+            },
+            include: {
+                tasks: true,
+                participants: true
+            }
+        })
     }
 
 }

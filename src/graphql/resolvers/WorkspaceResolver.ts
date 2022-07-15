@@ -11,6 +11,8 @@ import { User } from "../types/User";
 import { PaginationArgs } from "../args/PaginationArgs";
 import { UpdateWorkspaceArgs } from "../args/workspace/UpdateWorkspaceArgs";
 import { AddParticipantArgs } from "../args/workspace/AddParticipantArgs";
+import { UsersOnWorkspaces } from "@prisma/client";
+import { UserService } from "../../services/UserService";
 
 @Service()
 @Resolver(Workspace)
@@ -18,7 +20,8 @@ export class WorkspaceResolver {
 
     constructor(
         @Inject() private workspaceService: WorkspaceService,
-        @Inject() private taskService: TaskService
+        @Inject() private taskService: TaskService,
+        @Inject() private userService: UserService
         ) {}
 
     @Query(returns => Workspace)
@@ -50,16 +53,18 @@ export class WorkspaceResolver {
         return this.workspaceService.addParticipant(userId, workspaceId)
     }
 
-    /**
-     * @todo Implementar el resolver para eliminar workspace.
-     */
+    @Mutation(returns => Workspace)
+    @UseMiddleware(apiAuth)
     async deleteWorkspace(@Args() {id}: WorkspaceArgs) {
-        
+        return await this.workspaceService.deleteWorkspace(id)
     }
 
     @FieldResolver(returns => [Task])
     async tasks(@Root() root: Workspace, @Args() {offset, limit}: PaginationArgs) {
-       return this.taskService.findByWorkspace(root.id, offset, limit)
+        if(root.tasks != null) {
+            return root.tasks
+        }  
+        return this.taskService.findByWorkspace(root.id, offset, limit)
     }
 
     @FieldResolver(returns => [User])
@@ -68,7 +73,11 @@ export class WorkspaceResolver {
     }
 
     @FieldResolver(returns => User)
-    async owner(@Root() root: Workspace) {
+    async owner(@Root() root: Workspace & {tasks: Task[], participants: UsersOnWorkspaces[]}) {
+        if(root.participants != null) {
+            let userId = root.participants.find((user: UsersOnWorkspaces) => user.role == 'owner').userId
+            return this.userService.findById(userId)
+        }  
         return this.workspaceService.getOwner(root.id)
     }
 
