@@ -116,7 +116,7 @@ export class WorkspaceService {
     }
 
     public async updateWorkspace(id: number, name?: string) {
-        return this.prisma.workspace.update({where: {id}, data: {name}})
+        return this.prisma.workspace.update({where: {id: Number(id)}, data: {name}})
     }
 
     public async deleteWorkspace(id: number): Promise<Workspace & {tasks: Task[], participants: UsersOnWorkspaces[]}> {
