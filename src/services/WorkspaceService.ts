@@ -24,7 +24,7 @@ export class WorkspaceService {
                             id: Number(userId)
                         }
                     })
-                    .workspaces({where: {role: 'owner'}, include: { workspace: true }}))
+                    .workspaces({include: { workspace: true }}))
                     .map((workspace: UsersOnWorkspaces & {workspace: Workspace}) => {
                         return workspace.workspace
                     })
