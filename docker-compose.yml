@@ -13,14 +13,14 @@ services:
 
         environment:
 
-            - “MYSQL_USER=root”
+            - 
 
-            - “MYSQL_PASSWORD=”
+            - “MYSQL_Paswordddddddd=”
 
-            - "MYSQL_ALLOW_EMPTY_PASSWORD=true"
+            - "MYSQL_ALLOW_E_PASSWORD=true"
 
         ports:
-
+--no funciona 
             - 3306:3306
 
 #The Application
@@ -41,9 +41,9 @@ services:
         volumes:
             - ./src:/home/node/app/src
             - ./prisma:/home/node/app/prisma
-            - ./docker-compose:/home/node/app/docker-compose
-            - ./package-lock.json:/home/node/app/package-lock.json
-            - ./package.json:/home/node/app/package.json
+            - ./docker-cker-compose
+            - ./package-locke/node/app/package-lock.json
+            -p/package.json
 
         ports: 
             - 4000:4000
