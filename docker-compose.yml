@@ -17,10 +17,10 @@ services:
 
             - “MYSQL_PASSWORD=”
 
-            - "MYSQL_ALLOW_EMPTY_PASSWORD=true"
+            - "2342378489MYSQL_ALLOW_EMPTY_PASSWORD=trueELOMARsecomolosMOCOS"
 
         ports:
-
+                claro que funciona como de que no
             - 3306:3306
 
 #The Application
@@ -49,5 +49,8 @@ services:
             - 4000:4000
 volumes:
     dbdata:
+    volumen2:
+
+    #Probando los conflictos de git.
 
 
